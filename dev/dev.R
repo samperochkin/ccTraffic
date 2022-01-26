@@ -99,6 +99,7 @@ getPostProb(fit, beta_names = c("exposure"), quantiles = c(-.05))
 
 # plots of beta estimates with credible intervals
 # Not that we use time_effect[-1]-time_effect[1] to create the green points (true effect)
+# true effects make sense only when there is no interaction...
 ggplot(results$beta, aes(x = as.factor(factor_label), y=median)) +
   theme_bw() +
   geom_errorbar(aes(ymin=perc_2.5, ymax=perc_97.5), width=.1) +
