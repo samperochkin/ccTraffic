@@ -6,16 +6,17 @@
 #' @param data The dataset on which the model is fitted. It should contain all the variables involved in the model.
 #' @return A fitted model.
 #' @export
-#' @useDynLib cc
+#' @useDynLib ccTraffic
 #' @import TMB
+#' @import aghq
 #' @importFrom magrittr %>%
 #' @importFrom purrr map
-fitModel <- function(model, data, dll = NULL){
+fitModel <- function(model, data){
 
   data <- as.data.frame(data)
   checkups(model, data)
 
-  # 1) case_day, control_days. 2) z_init, z_pos 3) X, beta_prec
+  # 1) case_day, control_days. 2) z_init, z_pos. 3) X, beta_prec
   list2env(getCaseControl(data, model), envir = environment())
   list2env(setOverdispersion(data, model, case_day, control_days), envir = environment())
   list2env(constructX(model, data), envir = environment())
@@ -33,10 +34,8 @@ fitModel <- function(model, data, dll = NULL){
   theta_init <- getPriorInit(model)
   parameters <- list(beta = rep(0,ncol(tmb_data$X)), z = z_init, theta = theta_init)
 
+  obj <- TMB::MakeADFun(tmb_data, parameters, random = c("beta","z"), DLL="ccTraffic", hessian=T)
 
-  if(is.null(dll)) dll <- "ccTraffic"
-  obj <- TMB::MakeADFun(tmb_data, parameters, random = c("beta","z"), DLL=dll, hessian=T)
-
-  quad <- aghq::marginal_laplace_tmb(obj, model$control_aghq$k, theta_init)
+  quad <- aghq::marginal_laplace_tmb(obj, model$aghq_input$k, theta_init, control = model$aghq_input$control)
   list(quad = quad, obj = obj, model = model)
 }

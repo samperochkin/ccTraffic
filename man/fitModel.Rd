@@ -4,7 +4,7 @@
 \alias{fitModel}
 \title{Fit a model}
 \usage{
-fitModel(model, data, dll = NULL)
+fitModel(model, data)
 }
 \arguments{
 \item{model}{A model (list of info, see template).}

@@ -11,8 +11,8 @@ library(ggplot2)
 
 
 # synthetic data ----------------------------------------------------------
-n_int <- 200 # number of intersections
-n_cen <- 8 # number of census tracks
+n_int <- 500 # number of intersections
+n_cen <- 20 # number of census tracks
 
 # Int and Cen variables
 data <- data.frame(Int = sample(1e10,n_int), Cen = sample(n_cen,n_int,replace=T))
@@ -21,8 +21,8 @@ data <- data.frame(Int = sample(1e10,n_int), Cen = sample(n_cen,n_int,replace=T)
 time_grid <- expand.grid(k = 1:nrow(data), time = 1:8)
 data <- cbind(data[time_grid$k,], time = time_grid$time)
 
-# remove some rows to amke sure algorithm is robust to that
-data <- data[-sample(nrow(time_grid), n_int),]
+# remove some rows to make sure algorithm is robust to that
+# data <- data[-sample(nrow(time_grid), n_int),]
 
 # create fake exposure (random)
 data$exposure <- sample(0:2, nrow(data), replace = T)
@@ -33,7 +33,7 @@ z_frame <- unique(z_id) # for later
 z_id <- apply(z_id, 1, paste, collapse = "_") # paste the two columns to create unique ids
 u_z_id <- unique(z_id) # collect unique ids
 data$z_id <- match(z_id, u_z_id) # switch from weird x_y id to a single number
-theta <- 4.5
+theta <- 3
 sigma <- sqrt(exp(-theta)); sigma
 z_effect <- rnorm(length(u_z_id), 0, sigma)
 z_frame$z_true <- z_effect
@@ -55,8 +55,8 @@ model <- list(
   fixed = list("exposure" = fixedEffect(beta_prec = 0.01),
                "time" = fixedEffect(beta_prec = 0.01, is_factor = T)),
   overdispersion = list(cluster_variables = c("Cen", "time"),
-                        theta_prior = pc_prec_prior(u = .1, alpha = .5)),
-  control_aghq = controlAGHQ()
+                        theta_prior = pc_prec_prior(u = 0.01, alpha = .5)),
+  aghq_input = aghqInput()
 )
 
 # alternate model
@@ -68,7 +68,7 @@ model <- list(
 #                "exposure:time" = fixedEffect(beta_prec = 0.01)),
 #   overdispersion = list(cluster_variables = c("Cen", "time"),
 #                         theta_prior = pc_prec_prior(u = .1, alpha = .5)),
-#   control_aghq = controlAGHQ()
+#   aghq_input = aghqInput()
 # )
 
 # https://inla.r-inla-download.org/r-inla.org/doc/prior/pc.prec.pdf
@@ -77,7 +77,7 @@ model <- list(
 
 
 # Fit model ---------------------------------------------------------------
-fit <- fitModel(model, data, dll = "cc")
+fit <- fitModel(model, data)
 results <- getResults(fit)
 
 # beta estimates
@@ -112,11 +112,7 @@ ggplot(results$beta, aes(x = as.factor(factor_label), y=median)) +
 
 
 # plots of z estimates with credible intervals
-# Here we remove the effect of the overdispersion term at time=1 (not fitted)
-z_frame1 <- z_frame[z_frame$time == 1,]
-names(z_frame1)[3] <- "z_ref"
-z_frame <- merge(z_frame, z_frame1[,-2], by = c("Cen"))
-z_frame$z_adj <- z_frame$z_true - z_frame$z_ref
+z_frame
 
 # actual plots
 # if you have lots of census tracks, the following chunk will crash your R
@@ -128,8 +124,5 @@ ggplot(results$z[results$z$Cen %in% Cen_subset,], aes(x = time, y=median)) +
   geom_point() +
   geom_errorbar(aes(ymin=perc_2.5, ymax=perc_97.5), width=.1) +
   geom_line(alpha=.25) +
-  geom_point(data = z_frame[z_frame$Cen %in% Cen_subset,], aes(y = z_adj), col="green") +
-  # geom_point(data = z_frame[z_frame$Cen %in% Cen_subset,], aes(y = z_true), col="green") +
+  geom_point(data = z_frame[z_frame$Cen %in% Cen_subset,], aes(y = z_true), col="green") +
   facet_wrap(~Cen, scales = "free_x")
-
-

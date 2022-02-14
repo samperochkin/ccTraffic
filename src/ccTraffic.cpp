@@ -42,8 +42,8 @@ Type objective_function<Type>::operator() ()
   eta.setZero();
 
   if(beta_dim != 0) eta += X*beta;
-  for(int i = 0; i < z_pos.size(); i++){
-    if(z_pos(i) == 0) continue;
+  for(int i = 0; i < eta_dim; i++){
+    // if(z_pos(i) == 0) continue;
     eta(i) += z(z_pos(i)-1);
   }
 
@@ -83,7 +83,7 @@ Type objective_function<Type>::operator() ()
   /*--------------------------------------------------------------------------*/
   /* WATCH OUT HERE IF MORE THAN ONE THETA PARAMETER */
   Type log_pi_z = 0;
-  for(int i=0; i<theta_dim; i++) log_pi_z += dnorm(z, Type(0), 1/sqrt(exp(theta(i))), true).sum();
+  for(int i=0; i<theta_dim; i++) log_pi_z += dnorm(z, Type(0), exp(-theta(i)/2), true).sum();
   REPORT(log_pi_z);
   // Rcout << "lz : " << log_pi_z << "\n";
 

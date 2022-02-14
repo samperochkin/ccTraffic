@@ -14,13 +14,13 @@
 #' controlAGHQ()
 #' controlAGHQ(k=5)
 #' @export
-controlAGHQ <- function(...){
+aghqInput <- function(...){
 
   params = list(...)
 
   # default cc parameters
-  control <- list(k = 3)
+  aghq_input <- list(k = 3, control = aghq::default_control_tmb())
 
-  control[names(params)] <- params
-  return(control)
+  aghq_input[names(params)] <- params
+  return(aghq_input)
 }

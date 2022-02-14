@@ -67,13 +67,14 @@ setOverdispersion <- function(data, model, case_day, control_days){
 
   u_ids <- unique(clus_ids)
   u_ids <- u_ids[order(u_ids[,1],u_ids[,2]),]
-  first_of_each <- sapply(unique(u_ids[,1]), function(id) which(u_ids[,1] == id)[1])
-  u_ids <- u_ids[-first_of_each,]
+  # first_of_each <- sapply(unique(u_ids[,1]), function(id) which(u_ids[,1] == id)[1])
+  # u_ids <- u_ids[-first_of_each,]
 
   z_init <- rep(0,  nrow(u_ids))
   z_pos <- match(apply(clus_ids, 1, paste, collapse = "__"),
                  apply(u_ids, 1, paste, collapse = "__"))
-  z_pos[is.na(z_pos)] <- 0
+  # z_pos[is.na(z_pos)] <- 0
+  if(any(is.na(z_pos))) return("Something went wrong assigning overdispersion terms... Call me.")
 
   model$overdispersion$cluster_mat <- cbind(sapply(1:2, function(k) u_clus_values[[k]][u_ids[,k]]), u_ids)
   colnames(model$overdispersion$cluster_mat)[1:2] <- c(clus_vars)

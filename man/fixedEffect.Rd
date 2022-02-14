@@ -4,7 +4,7 @@
 \alias{fixedEffect}
 \title{Specify a fixed effect.}
 \usage{
-fixedEffect(prior_prec = 0.01, as_factor = F)
+fixedEffect(beta_prec = 0.01, is_factor = F)
 }
 \arguments{
 \item{prior}{Prior distribution on the (beta) coefficient. Only the gaussian prior is implemented.}

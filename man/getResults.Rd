@@ -2,18 +2,20 @@
 % Please edit documentation in R/analysis_functions.R
 \name{getResults}
 \alias{getResults}
-\title{Extract results from a fitted ccModel.}
+\title{Extract results from a fitted case-crossover model.}
 \usage{
-getResults(fit, probs = 0.5, M = 10000)
+getResults(fit, probs = c(0.01, 0.025, 0.05, 0.95, 0.975, 0.99), M = 10000)
 }
 \arguments{
-\item{fit}{A fitted ccModel (obtained via `fitModel(model)`).}
+\item{fit}{A fitted case-crossover model (obtained via `fitModel(model)`).}
 
-\item{quantiles}{Quantiles of the posterior (cumulative) distribution of fixed and random effects (and overdispersion terms).}
+\item{probs}{Probabilities at which to recover the quantiles of the posterior (cumulative) distribution of fixed and random effects.}
+
+\item{M}{Number of replicates to draw for the posterior (to approximate it, the more the better).}
 }
 \value{
-A data.frame with values of the beta and gamma coefficients, as well as their credible intervals.
+Three summary data.frame's. One each for beta, z (overdispersion) and theta.
 }
 \description{
-Extract results from a fitted ccModel.
+Extract results from a fitted case-crossover model.
 }
