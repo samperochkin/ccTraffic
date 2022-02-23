@@ -27,7 +27,7 @@ fitModel <- function(model, data){
   # Model fit ---------------------------------------------------------------
   tmb_data <- list(count = data[case_day, model$count_variable],
                    case_day = case_day, control_days = control_days,
-                   X = X,
+                   X = X, offset = rowSums(data[, model$offset, F]),
                    beta_prec = beta_prec, theta_hypers = theta_hypers,
                    z_pos = z_pos)
 

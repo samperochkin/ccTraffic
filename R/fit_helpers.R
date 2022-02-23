@@ -8,7 +8,7 @@ checkups <- function(model, data){
 
 # check if all variables are actually in the data.
 findVariables <- function(model, data){
-  var_names <- c(model$count_variable, names(model$fixed))
+  var_names <- c(model$count_variable, names(model$fixed), names(model$offset))
   var_names <- var_names[!grepl(":", var_names)]
   if(!all(var_names %in% names(data))){
     stop("One of the names provided for the count_variable or fixed effects could not be matched in the data provided.")
@@ -17,7 +17,7 @@ findVariables <- function(model, data){
 
 # check for NA.
 checkNA <- function(model, data){
-  var_names <- c(model$count_variable, names(model$fixed))
+  var_names <- c(model$count_variable, names(model$fixed), names(model$offset))
   var_names <- var_names[!grepl(":", var_names)]
   if(any(is.na(data[,var_names]))){
     stop("The dataset contains NA... please remove them before fitting the model")

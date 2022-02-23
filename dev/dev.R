@@ -11,8 +11,8 @@ library(ggplot2)
 
 
 # synthetic data ----------------------------------------------------------
-n_int <- 500 # number of intersections
-n_cen <- 20 # number of census tracks
+n_int <- 50 # number of intersections
+n_cen <- 5 # number of census tracks
 
 # Int and Cen variables
 data <- data.frame(Int = sample(1e10,n_int), Cen = sample(n_cen,n_int,replace=T))
@@ -26,6 +26,7 @@ data <- cbind(data[time_grid$k,], time = time_grid$time)
 
 # create fake exposure (random)
 data$exposure <- sample(0:2, nrow(data), replace = T)
+data$off <- data$time/8 * sample(seq(1,3)/2,max(data$Cen),T)[data$Cen]
 
 # create overdispersion terms (per Cen and time)
 z_id <- data[,cbind("Cen", "time")]
@@ -42,7 +43,9 @@ z_frame$z_true <- z_effect
 time_effect <- runif(max(data$time), 0, .5)
 
 # generate counts from true model (with intercept of 1 that we cannot estimate)
-data$count <- rpois(nrow(data), exp(1 + time_effect[data$time] - .05 * data$exposure + z_effect[data$z_id]))
+# lambdas <- exp(1 + time_effect[data$time] - .05 * data$exposure + z_effect[data$z_id])
+lambdas <- exp(1 + time_effect[data$time] - .05 * data$exposure + z_effect[data$z_id] + log(data$off))
+data$count <- rpois(nrow(data), lambdas)
 
 
 
@@ -56,7 +59,8 @@ model <- list(
                "time" = fixedEffect(beta_prec = 0.01, is_factor = T)),
   overdispersion = list(cluster_variables = c("Cen", "time"),
                         theta_prior = pc_prec_prior(u = 0.01, alpha = .5)),
-  aghq_input = aghqInput()
+  offset = "off",
+  aghq_input = aghqInput(method = "trustOptim")
 )
 
 # alternate model

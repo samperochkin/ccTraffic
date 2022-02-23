@@ -19,6 +19,7 @@ Type objective_function<Type>::operator() ()
   DATA_IMATRIX(control_days);
 
   DATA_MATRIX(X);
+  DATA_VECTOR(offset);
 
   DATA_VECTOR(beta_prec);
   DATA_VECTOR(theta_hypers);
@@ -40,6 +41,7 @@ Type objective_function<Type>::operator() ()
 
   vector<Type> eta(eta_dim);
   eta.setZero();
+  eta += log(offset); // offset should always be of length n
 
   if(beta_dim != 0) eta += X*beta;
   for(int i = 0; i < eta_dim; i++){
