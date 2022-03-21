@@ -139,7 +139,11 @@ samps <- generateSamples(fit, M = 1e5)
 
 # beta
 sample_ind <- grepl("sample", colnames(samps$beta))
-hist(unlist(samps$beta[1,sample_ind]), breaks=50, probability = T)
+ran <- range(unlist(samps$beta[3,sample_ind]))
+
+xx <- seq(-2,2,.05)
+hist(unlist(samps$beta[3,sample_ind]), probability = T, xlim =  ran,
+     breaks = xx, col = c("green", "red")[(xx >= 0) + 1])
 
 # z
 sample_ind <- grepl("sample", colnames(samps$z))
