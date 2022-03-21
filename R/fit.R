@@ -24,10 +24,18 @@ fitModel <- function(model, data){
   # hyperparameters
   theta_hypers <- model$overdispersion$theta_prior$params %>% unlist # *** apply if more than one theta
 
+  # offset
+  if(is.null(model$offset)){
+    offset <- rep(1, nrow(data))
+  }else{
+    offset <- rowSums(data[, model$offset, F])
+  }
+
+
   # Model fit ---------------------------------------------------------------
   tmb_data <- list(count = data[case_day, model$count_variable],
                    case_day = case_day, control_days = control_days,
-                   X = X, offset = rowSums(data[, model$offset, F]),
+                   X = X, offset = offset,
                    beta_prec = beta_prec, theta_hypers = theta_hypers,
                    z_pos = z_pos)
 

@@ -3,6 +3,7 @@
 export(aghqInput)
 export(fitModel)
 export(fixedEffect)
+export(generateSamples)
 export(getPostProb)
 export(getResults)
 export(pc_prec_prior)

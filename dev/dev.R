@@ -130,3 +130,24 @@ ggplot(results$z[results$z$Cen %in% Cen_subset,], aes(x = time, y=median)) +
   geom_line(alpha=.25) +
   geom_point(data = z_frame[z_frame$Cen %in% Cen_subset,], aes(y = z_true), col="green") +
   facet_wrap(~Cen, scales = "free_x")
+
+
+
+# Posterior distributions -------------------------------------------------
+
+samps <- generateSamples(fit, M = 1e5)
+
+# beta
+sample_ind <- grepl("sample", colnames(samps$beta))
+hist(unlist(samps$beta[1,sample_ind]), breaks=50, probability = T)
+
+# z
+sample_ind <- grepl("sample", colnames(samps$z))
+hist(unlist(samps$z[1,sample_ind]), breaks=50, probability = T)
+
+# theta
+sample_ind <- grepl("sample", colnames(samps$theta))
+hist(unlist(samps$theta[1,sample_ind]), breaks=50, probability = T)
+
+# remove the samps object (because it can be quite big)
+rm(samps)
