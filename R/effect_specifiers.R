@@ -4,6 +4,6 @@
 #' @examples
 #' fixedEffect()
 #' @export
-fixedEffect <- function(beta_prec = .01, is_factor = F){
-  list(beta_prec = beta_prec, is_factor = is_factor)
+fixedEffect <- function(beta_prec = .01, is_factor = F, beta_mean = 0){
+  list(beta_prec = beta_prec, is_factor = is_factor, beta_mean = beta_mean)
 }

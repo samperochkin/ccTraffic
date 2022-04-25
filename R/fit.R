@@ -36,7 +36,8 @@ fitModel <- function(model, data){
   tmb_data <- list(count = data[case_day, model$count_variable],
                    case_day = case_day, control_days = control_days,
                    X = X, offset = offset,
-                   beta_prec = beta_prec, theta_hypers = theta_hypers,
+                   beta_prec = beta_prec, beta_mean = beta_mean,
+                   theta_hypers = theta_hypers,
                    z_pos = z_pos)
 
   theta_init <- getPriorInit(model)

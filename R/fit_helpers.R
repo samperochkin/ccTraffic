@@ -106,6 +106,7 @@ constructX <- function(model, data){
   # design matrix
   X <- matrix(nrow = nrow(data), ncol = 0)
   beta_prec <- numeric(0)
+  beta_mean <- numeric(0)
 
   for(fixed_name in fixed_names){
     if(!is_factor[fixed_name] & !is_interaction[fixed_name]){
@@ -147,11 +148,16 @@ constructX <- function(model, data){
       stop("Something went wrong. Write to me.")
     }
     X <- cbind(X, x)
+
+    beta_mean_0 <- model$fixed[[fixed_name]]$beta_mean
+    if(!(length(beta_mean_0) %in% c(1,beta_len))) stop("problem with beta_mean of some fixed effect")
+    if(length(beta_mean_0) == 1) rep(beta_mean_0, beta_len)
+    beta_mean <- c(beta_mean, beta_mean_0)
     beta_prec <- c(beta_prec, rep(model$fixed[[fixed_name]]$beta_prec, beta_len))
   }
   names(beta_prec) <- colnames(X)
 
-  list(model = model, X = X, beta_prec = beta_prec)
+  list(model = model, X = X, beta_prec = beta_prec, beta_mean = beta_mean)
 }
 
 # Compute initial theta parameter to be passed to aghq::quad.

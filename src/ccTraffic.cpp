@@ -22,6 +22,7 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(offset);
 
   DATA_VECTOR(beta_prec);
+  DATA_VECTOR(beta_mean);
   DATA_VECTOR(theta_hypers);
 
   DATA_IVECTOR(z_pos);
@@ -75,7 +76,8 @@ Type objective_function<Type>::operator() ()
   /* LOG LIKELIHOOD BETA -----------------------------------------------------*/
   /*--------------------------------------------------------------------------*/
   Type log_pi_beta = 0;
-  for(int i=0;i<beta_dim;i++) log_pi_beta += dnorm(beta(i), Type(0), 1/sqrt(beta_prec(i)), true);
+  // for(int i=0;i<beta_dim;i++) log_pi_beta += dnorm(beta(i), Type(0), 1/sqrt(beta_prec(i)), true);
+  for(int i=0;i<beta_dim;i++) log_pi_beta += dnorm(beta(i), beta_mean(i), 1/sqrt(beta_prec(i)), true);
   REPORT(log_pi_beta);
   // Rcout << "lbeta : " << log_pi_beta << "\n";
 
